@@ -33,7 +33,7 @@ tbmfs = TBMFSClassifier(Xcut=Xcut,
                         αₘ=[1, 1, 1],
                         γₘ=[1, 1, 1],
                         r=10,
-                        μ=0.1,
+                        μ=1e-4,
                         ρ=1.1,
                         maxiter=3000,
                         tol=1e-4)
