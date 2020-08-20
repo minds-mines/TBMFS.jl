@@ -326,15 +326,16 @@ function MLJBase.fit(model::TBMFSClassifier, verbosity::Integer, X, y)
         objloss!(obj𝓛s, i, Xₘ, Y_hot, W, b, Z, Bₘ, αₘ, γₘ, C)
 
         if verbosity>5 println("LOSS: ", obj𝓛s[i]) end
-        if abs(prev_𝓛 - 𝓛s[i]) < model.tol
+        if abs(prev_𝓛 - obj𝓛s[i]) < model.tol
+            [resize!(x, i) for x in [obj𝓛s, 𝓛s, Es, Fs, B̂s, Ẑs]]
             break
         end
-        prev_𝓛 = 𝓛s[i]
+        prev_𝓛 = obj𝓛s[i]
     end
 
     fitresult = (Bₘ, W, b, classes(y[1]))
     cache = missing
-    report = (losses=(obj𝓛s, 𝓛s, Es, Fs, B̂s, Ẑs))
+    report = (losses=(obj𝓛s, 𝓛s, Es, Fs, B̂s, Ẑs), Z=(Z))
 
     return fitresult, cache, report
 end

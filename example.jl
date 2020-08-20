@@ -1,6 +1,8 @@
 using MLJ
 using CategoricalArrays
 using Plots
+using Plots.PlotMeasures
+using LaTeXStrings
 
 import MLJBase
 
@@ -22,9 +24,12 @@ the objective value over time.
 """
 
 # Creating some synthetic multimodal data
-X = randn(1000, 100)
+N = 90
+D = 100
+
+X = randn(N, D)
 Xcut = [1:40, 41:90, 91:100] # X contains three modalities, here's how to cut
-y = recode(rand(0:1, 1000), 0=>"HC/MCI", 1=>"AD")
+y = recode(rand(0:1, N), 0=>"HC/MCI", 1=>"AD")
 y = CategoricalArray(y)
 
 include("TBMFS.jl")
@@ -35,8 +40,8 @@ tbmfs = TBMFSClassifier(Xcut=Xcut,
                         r=10,
                         μ=1e-4,
                         ρ=1.1,
-                        maxiter=3000,
-                        tol=1e-4)
+                        maxiter=1000,
+                        tol=1e-8)
 
 tbmfs_classifier = machine(tbmfs, X, y)
 
@@ -52,5 +57,26 @@ evaluate!(tbmfs_classifier,
 # See https://alan-turing-institute.github.io/MLJ.jl/stable/ for additional details
 
 # Once the model is trained we can plot its objective
-objective = report(tbmfs_classifier)[1]
-plot(objective, xlabel="Iteration", ylabel="Objective, see Eq. (5)", legend=false)
+objective = report(tbmfs_classifier).losses[1]
+eq5 = plot(objective, label="Eq. (5)", xlabel="Iteration", ylabel="Objective", title="Convergence")
+
+# We can also plot the differences between our introduced variables
+Es = report(tbmfs_classifier).losses[3]
+Fs = report(tbmfs_classifier).losses[4]
+Bs = report(tbmfs_classifier).losses[5]
+Zs = report(tbmfs_classifier).losses[6]
+
+diffs = plot(Es, label=L"\sum || e_{ik} - (y_{ik} - (\mathbf{w}_k^T\mathbf{z}_i+b_k)) || ", yaxis=:log, xlabel="Iteration", ylabel="Difference", title="Constraint Differences")
+plot!(Fs, label=L"\sum || \mathbf{F}_m - \left(\mathbf{X}_m - \mathbf{B}_m\mathbf{Z}\right) || ")
+plot!(Bs, label=L"\sum || \hat{\mathbf{B}}_m - \mathbf{B}_m ||")
+plot!(Zs, label=L" || \hat{\mathbf{Z}} - \mathbf{Z} || ")
+
+# Check that Z meets constraints too
+Z = report(tbmfs_classifier).Z
+hm = heatmap(Z*Z', yflip=true, legendfontsize=2, title=L"\mathbf{Z}\mathbf{Z}^T = \mathbf{I}")
+
+plot(eq5, diffs, hm, layout = (1, 3), size=(1500, 400))
+plot!(legend=:topright)
+plot!(margin=5mm)
+
+

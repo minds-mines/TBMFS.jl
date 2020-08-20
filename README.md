@@ -21,3 +21,7 @@ julia> include("example.jl")
 ```
 
 Tested on Julia Version 1.3.1
+
+## Algorithm Convegence
+
+![TBMFS Convergence](/images/convergence.png)`
