@@ -1,7 +1,6 @@
 import MLJBase
 
 using DataFrames
-using MLLabelUtils
 using LinearAlgebra
 using MLJ
 
