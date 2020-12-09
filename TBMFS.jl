@@ -354,14 +354,13 @@ function MLJBase.predict(model::TBMFSClassifier, fitresult, Xnew)
 
     Znew = zeros(model.r, size(xnew)[1])
 
+    ∑lhs = zeros(model.r, model.r)
+    ∑rhs = zeros(model.r, size(xnew, 1))
     for m in 1:length(Xnewₘ)
-        Zpartial = model.αₘ[m] * pinv(Bₘ[m]) * Xnewₘ[m]
-        if DEBUG
-            display(Zpartial)
-        end
-        Znew += Zpartial
+        ∑lhs += model.αₘ[m] * Bₘ[m]' * Bₘ[m]
+        ∑rhs += model.αₘ[m] * Bₘ[m]' * Xnewₘ[m]
     end
-    Znew = Znew ./ sum(model.αₘ)
+    Znew = pinv(∑lhs) * ∑rhs
     pred = W'*Znew .+ b
 
     return onecold(pred, c)
