@@ -1,9 +1,11 @@
 # Task Balanced Multimodal Feature Selection Implementation
 
-This code is designed to support the submission BIBE 2020 titled: 
+This code is designed to support the BIBE 2020 paper titled: 
 
 "Task Balanced Multimodal Feature Selection to Predict the Progression of
 Alzheimer’s Disease"
+
+[![Task Balanced Multimodal Feature Selection to Predict the Progression of Alzheimer's Disease](/images/tbmfs-thumbnail.png)](https://www.youtube.com/watch?v=i5qpEho8KNw)
 
 Implementation details of the Task Balanced Multimodal Feature Selection
 method can be found in the `TBMFS.jl` file in this folder. Usage can be found
